@@ -17,9 +17,9 @@ builder.Services.AddDbContext<NorthwindContext>(options =>
 });
 
 //contexto Auth
-connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString2 = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseSqlite(connectionString2));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

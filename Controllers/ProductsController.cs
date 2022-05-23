@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Autorizacion.Data;
 using Autorizacion.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace aspnetcore_with_reactspa.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
         private readonly NorthwindContext _context;
@@ -63,6 +65,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // GET: api/Products
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
