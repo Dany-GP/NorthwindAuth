@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Autorizacion.Data;
 using Autorizacion.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,9 @@ builder.Services.AddIdentityServer()
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
+
+
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

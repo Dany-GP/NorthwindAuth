@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Autorizacion.Data;
 using Autorizacion.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace aspnetcore_with_reactspa.Controllers
 {
@@ -16,11 +18,14 @@ namespace aspnetcore_with_reactspa.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
+
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly NorthwindContext _context;
 
-        public ProductsController(NorthwindContext context)
+        public ProductsController(NorthwindContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -60,8 +65,8 @@ namespace aspnetcore_with_reactspa.Controllers
                     && m.Date <= endDate
                     && m.Type == "VENTAS"
                 );
-                
-                
+
+
         }
 
         // GET: api/Products
@@ -69,10 +74,10 @@ namespace aspnetcore_with_reactspa.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-          if (_context.Products == null)
-          {
-              return NotFound();
-          }
+            if (_context.Products == null)
+            {
+                return NotFound();
+            }
             return await _context.Products.OrderByDescending(p => p.ProductId).ToListAsync();
         }
 
@@ -80,10 +85,13 @@ namespace aspnetcore_with_reactspa.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-          if (_context.Products == null)
-          {
-              return NotFound();
-          }
+            /* String userId = HttpContext.User.Claims.FirstOrDefault
+                    (x => x.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == null) throw new Exception("No autorizado"); */
+            if (_context.Products == null)
+            {
+                return NotFound();
+            }
             var product = await _context.Products.FindAsync(id);
 
             if (product == null)
@@ -130,11 +138,14 @@ namespace aspnetcore_with_reactspa.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            
-          if (_context.Products == null)
-          {
-              return Problem("Entity set 'NorthwindContext.Products'  is null.");
-          }
+            /* String userId = HttpContext.User.Claims.FirstOrDefault
+                    (x => x.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == null) throw new Exception("No autorizado"); */
+
+            if (_context.Products == null)
+            {
+                return Problem("Entity set 'NorthwindContext.Products'  is null.");
+            }
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
