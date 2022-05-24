@@ -70,10 +70,11 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // GET: api/Products
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
+            
             if (_context.Products == null)
             {
                 return NotFound();
@@ -82,6 +83,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // GET: api/Products/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
@@ -104,6 +106,7 @@ namespace aspnetcore_with_reactspa.Controllers
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
@@ -135,6 +138,7 @@ namespace aspnetcore_with_reactspa.Controllers
 
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
@@ -153,6 +157,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // DELETE: api/Products/5
+        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

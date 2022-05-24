@@ -59,7 +59,7 @@ export class LoginMenu extends Component {
     anonymousView(registerPath, loginPath) {
         return (<Fragment>
             <NavItem>
-                <NavLink tag={Link} className="text-white mx-2" to={registerPath}>Register</NavLink>
+                <NavLink tag={Link} className="text-white mx-2" to={registerPath}>Registrate</NavLink>
             </NavItem>
             <NavItem>
                 <NavLink tag={Link} className="text-white mx-2" to={loginPath}>Login</NavLink>
