@@ -10,16 +10,13 @@ import {
 import authService from './api-authorization/AuthorizeService'
 
 export class Almacenes extends Component {
-
-
     constructor(props) {
         super(props);
         this.state = {
             accion: 0, data: [], categorias: [], suppliers: [], companies: [], productId: 0,
             name: "", proveedor: 0, categoria: 0, quantity: "", precio: 0,
-            company: 0
+            company: 0, idEditar: 0
         };
-
     }
 
     componentDidMount() {
@@ -40,7 +37,7 @@ export class Almacenes extends Component {
                     headers: {
                         headers: !token ? {} : {
                             'Authorization': `Bearer ${token}`,
-                            "Content-Type" : "application/json" 
+                            "Content-Type": "application/json"
                         }
                         //"Content-Type": "application/json"
                     }
@@ -55,7 +52,7 @@ export class Almacenes extends Component {
             }
         )
 
-        
+
 
         fetch('api/categories', options).then(response => {
             return response.json();
@@ -87,21 +84,7 @@ export class Almacenes extends Component {
 
     }
 
-    editarProducto() {
-        /*const producto =    {
-            productId: this.state.productId,
-            productName: this.state.name,
-            supplierId: parseInt( this.state.proveedor),
-            categoryId: parseInt( this.state.categoria),
-            quantityPerUnit: this.state.quantity,
-            unitPrice: parseFloat(this.state.precio),
-            photoPath: null,
-            companyId: parseInt( this.state.company)
-        }
-        console.log(producto.productName);
-        producto.productId  */
 
-    }
     eliminar() {
         const options = {
             method: "DELETE",
@@ -117,23 +100,45 @@ export class Almacenes extends Component {
         ).then(
             (code) => {
                 if (code == 204) {
-                    alert("ya jaló");
+                    //alert("ya jaló");
+                    this.componentDidMount();
+                    this.setState({accion : 0})
                 } else {
                     console.log(code);
                 }
             }
         )
     }
-    cargarModalEditar() {
+    cargarModalEditar=(id) =>{
+        const options = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        };
 
-    }
-    EditarProducto() {
-
+        fetch('api/Products/' + id, options).then(response => {
+            return response.json();
+        }).then(
+            (producto) => {
+                this.setState({
+                    name: producto.productName,
+                    proveedor: producto.supplierId,
+                    categoria: producto.categoryId,
+                    quantity: producto.quantityPerUnit,
+                    precio: producto.unitPrice,
+                    company: producto.companyId,
+                    accion: 2,
+                    idEditar: id
+                })
+                console.log(producto);
+                console.log(id);
+            }
+        );
     }
     agregarProducto() {
-
         const producto = {
-
+            productId: this.state.idEditar,
             productName: this.state.name,
             supplierId: parseInt(this.state.proveedor),
             categoryId: parseInt(this.state.categoria),
@@ -151,29 +156,52 @@ export class Almacenes extends Component {
             },
             body: JSON.stringify(producto)
         };
-
-        console.log(options);
-
-        fetch("api/Products", options).then(
-            (response) => {
-                return response.status;
-            }
-        ).then(
-            (code) => {
-                if (code == 201) {
-                    this.setState({ accion: 0 });
-                    this.componentDidMount();
-                } else {
-                    console.log(code);
+        //console.log(opt);
+        if (this.state.accion == 1) {
+            fetch("api/Products", options).then(
+                (response) => {
+                    return response.status;
                 }
-            }
-        )
-
-
+            ).then(
+                (code) => {
+                    if (code == 201) {
+                        this.setState({ accion: 0 });
+                        this.componentDidMount();
+                    } else {
+                        console.log(code);
+                    }
+                }
+            )
+        } else if (this.state.accion == 2) {
+            console.log(this.state.idEditar);
+            options.method = "PUT";
+            fetch("api/Products/" + this.state.idEditar, options).then(
+                (response) => {
+                    return response.status;
+                }
+            ).then(
+                (code) => {
+                    if (code == 204) {
+                        this.mitoogle();
+                        this.componentDidMount();
+                    } else {
+                        console.log(code);
+                    }
+                }
+            )
+        }
     }
 
     mitoogle = () => {
-        this.setState({ accion: 0 });
+        this.setState({
+            name: "",
+            proveedor: 0,
+            categoria: 0,
+            quantity: "",
+            precio: 0,
+            company: 0,
+            accion: 0
+        });
     }
 
     mostrarModalAgregar() {
@@ -181,10 +209,10 @@ export class Almacenes extends Component {
     }
 
     mostrarModalUpdate = () => {
-        this.setState({ accion: 3 });
+        this.setState({ accion: 2 });
     }
     mostrarModalDelete = (id) => {
-        this.setState({ accion: 2, productId: id });
+        this.setState({ accion: 3, productId: id });
         console.log(id)
     }
     render() {
@@ -220,7 +248,7 @@ export class Almacenes extends Component {
                                     <td>{producto.unitPrice}</td>
                                     <td>{producto.quantityPerUnit}</td>
                                     <td>
-                                        <button className="btn mx-3" onClick={() => this.mostrarModalUpdate()}>Editar</button>
+                                        <button className="btn mx-3" onClick={() => this.cargarModalEditar(producto.productId)}>Editar</button>
                                         <button className="btn btn-danger" onClick={() => this.mostrarModalDelete(producto.productId)}>X</button>
                                     </td>
                                 </tr>
@@ -231,7 +259,7 @@ export class Almacenes extends Component {
                 </table>
 
                 <Modal
-                    isOpen={this.state.accion == 1}
+                    isOpen={this.state.accion >= 1 && this.state.accion < 3}
                     centered
                     size="lg"
                     toggle={this.mitoogle}
@@ -300,7 +328,7 @@ export class Almacenes extends Component {
                 </Modal>
 
                 <Modal
-                    isOpen={this.state.accion == 2}
+                    isOpen={this.state.accion == 3}
                     centered
                     size="lg"
                     toggle={this.mitoogle}
@@ -321,83 +349,7 @@ export class Almacenes extends Component {
                         <button type="button" onClick={() => this.eliminar() == true} class="btn">Eliminar</button>
                     </ModalFooter>
                 </Modal>
-
-
-                <Modal
-                    isOpen={this.state.accion == 3 && true}
-                    centered
-                    size="lg"
-                    toggle={this.mitoogle}
-
-                >
-                    <ModalHeader
-                        toggle={this.mitoogle}
-                        close={<button className="btn-lg" onClick={this.mitoogle}>x</button>}
-                        className='bg-dark'
-                    >
-                        Editar Producto
-                    </ModalHeader>
-                    <ModalBody className='bg-dark'>
-                        <Form>
-                            <FormGroup className='my-3'>
-                                <Label for='name'>Producto ID: </Label>
-                                <Label for='name'>* </Label>
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <Label for='name'>Nombre del producto: </Label>
-                                <Input className='bg-dark text-white' name='name' ></Input>
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <Input className='bg-dark text-white' type='select' name='proveedor' onChange={evt => this.nameChange(evt)} value={this.state.proveedor}>
-                                    <option selected value="default">Selecciona un proveedor</option>
-                                    {
-                                        this.state.suppliers.map(supplier =>
-                                            <option value={supplier.supplierId}>{supplier.companyName}</option>
-                                        )
-
-                                    }
-                                </Input>
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <Input className='bg-dark text-white' type='select' name='categoria' onChange={evt => this.nameChange(evt)} value={this.state.categoria}>
-                                    <option selected value="default">Selecciona una categoria</option>
-                                    {
-                                        this.state.categorias.map(categoria =>
-                                            <option value={categoria.categoryId}>{categoria.categoryName}</option>
-                                        )
-
-                                    }
-                                </Input>
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <label for="quantity" class="form-label">Cantidad por unidad: </label>
-                                <input name='quantity' type="text" class="form-control bg-dark text-white" />
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <label for="precio" class="form-label">Precio unitario</label>
-                                <input name='precio' type="number" class="form-control bg-dark text-white" />
-                            </FormGroup>
-                            <FormGroup className='my-3'>
-                                <Input className='bg-dark text-white' type='select' name='company' onChange={evt => this.nameChange(evt)} value={this.state.company}>
-                                    <option selected value="default">Selecciona una compañía</option>
-                                    {
-                                        this.state.companies.map(companie =>
-                                            <option value={companie.companyId}>{companie.companyName}</option>
-                                        )
-
-                                    }
-                                </Input>
-                            </FormGroup>
-                        </Form>
-                    </ModalBody>
-                    <ModalFooter className='bg-dark'>
-                        <button type="button" class="btn" onClick={this.mitoogle}>Cerrar</button>
-                        <button type="button" class="btn">Editar</button>
-                    </ModalFooter>
-                </Modal>
             </div>
-
         );
     }
-
 }
