@@ -22,11 +22,9 @@ export class Almacenes extends Component {
     componentDidMount() {
         
         authService.getUser().then(
-            (u) => { console.log(u);
+            (u) => { 
                 const valo = authService.isAdmin(u);
-                console.log(valo);
                 this.setState({isUserValid: valo});
-                console.log(valo);
             }
 
         );
@@ -40,7 +38,6 @@ export class Almacenes extends Component {
 
         authService.getAccessToken().then(
             (token) => {
-                console.log(token);
                 const options = {
                     method: "GET",
                     headers: {
@@ -113,7 +110,6 @@ export class Almacenes extends Component {
                     this.componentDidMount();
                     this.setState({accion : 0})
                 } else {
-                    console.log(code);
                 }
             }
         )
@@ -140,8 +136,6 @@ export class Almacenes extends Component {
                     accion: 2,
                     idEditar: id
                 })
-                console.log(producto);
-                console.log(id);
             }
         );
     }
@@ -156,7 +150,6 @@ export class Almacenes extends Component {
             photoPath: null,
             companyId: parseInt(this.state.company)
         }
-        console.log(producto);
 
         const options = {
             method: "POST",
@@ -165,7 +158,6 @@ export class Almacenes extends Component {
             },
             body: JSON.stringify(producto)
         };
-        //console.log(opt);
         if (this.state.accion == 1) {
             fetch("api/Products", options).then(
                 (response) => {
@@ -177,12 +169,10 @@ export class Almacenes extends Component {
                         this.setState({ accion: 0 });
                         this.componentDidMount();
                     } else {
-                        console.log(code);
                     }
                 }
             )
         } else if (this.state.accion == 2) {
-            console.log(this.state.idEditar);
             options.method = "PUT";
             fetch("api/Products/" + this.state.idEditar, options).then(
                 (response) => {
@@ -194,7 +184,6 @@ export class Almacenes extends Component {
                         this.mitoogle();
                         this.componentDidMount();
                     } else {
-                        console.log(code);
                     }
                 }
             )
@@ -222,7 +211,6 @@ export class Almacenes extends Component {
     }
     mostrarModalDelete = (id) => {
         this.setState({ accion: 3, productId: id });
-        console.log(id)
     }
     render() {
         return (

@@ -17,19 +17,21 @@ export class NavMenu extends Component {
 
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
-      collapsed: true, isUserValid: false
+      collapsed: true, isUserValid: false, isUser: false
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     authService.getUser().then(
-      (u) => { console.log(u);
+      (u) => {
+        if (u) {
           const valo = authService.isValidUser(u);
-          console.log(valo);
-          this.setState({isUserValid: valo});
+          this.setState({ isUserValid: valo, isUser: true });
+        }
+
       }
 
-  );
+    );
   }
 
   toggleNavbar() {
@@ -56,7 +58,7 @@ export class NavMenu extends Component {
                   <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                 </NavItem>
                 <NavItem>
-                  {this.state.isUserValid && <NavLink tag={Link} className="text-white mx-2" to="/Almacenes">Almacenes</NavLink>}
+                  {this.state.isUser && <NavLink tag={Link} className="text-white mx-2" to="/Almacenes">Almacenes</NavLink>}
                 </NavItem>
                 <NavItem>
                   {this.state.isUserValid && <NavLink tag={Link} className="text-white mx-2" to="/Movimientos">Movimientos</NavLink>}

@@ -4,6 +4,7 @@ import {
     ModalHeader, ModalFooter, Form, FormGroup, Label, Input
 } from 'reactstrap';
 import './styles/Almacenes.css';
+import authService from './api-authorization/AuthorizeService'
 
 export class Movimientos extends Component {
 
@@ -12,12 +13,21 @@ export class Movimientos extends Component {
         this.state = {
             accion: 0, data: [], suppliers: [], companies: [], employees: [], warehouses: [], idEliminar: 0,
             proveedor: 0, inAlmacen: 0, outAlmacen: 0, movimiento: '', notas: '', compania: 0, empleado: 0, fecha: '',
-            idEditar : 0
+            idEditar: 0, isUserValid: false
         };
 
     }
 
     componentDidMount() {
+
+        authService.getUser().then(
+            (u) => {
+                const valo = authService.isAdmin(u);
+                this.setState({ isUserValid: valo });
+            }
+
+        );
+
         const options = {
             method: "GET",
             headers: {
@@ -30,7 +40,6 @@ export class Movimientos extends Component {
         }).then(
             (dataApi) => {
                 this.setState({ data: dataApi });
-                console.log(dataApi);
             }
         );
 
@@ -125,7 +134,6 @@ export class Movimientos extends Component {
                     accion: 2,
                     idEditar: id
                 })
-                console.log(movimiento);
             }
         );
     }
@@ -135,7 +143,6 @@ export class Movimientos extends Component {
         var fecha = new Date().getFullYear() + "-" + (new Date().getMonth() + 1).toString().padStart(2, "0") + "-" +
             new Date().getDate() + "T" + new Date().getHours().toString().padStart(2, "0") + ":" + new Date().getMinutes().toString().padStart(2, "0") +
             ":" + new Date().getSeconds().toString().padStart(2, "0");
-        console.log(fecha);
 
         var movimiento = {
             movementId: this.state.idEditar,
@@ -155,9 +162,8 @@ export class Movimientos extends Component {
             },
             body: JSON.stringify(movimiento)
         };
-        console.log(movimiento);
         if (this.state.accion == 1) {
-    
+
             fetch("api/movements", options).then(
                 (response) => {
                     return response.status;
@@ -168,13 +174,12 @@ export class Movimientos extends Component {
                         this.mitoogle();
                         this.componentDidMount();
                     } else {
-                        console.log(code);
                     }
                 }
             )
-        }else if(this.state.accion==2){
+        } else if (this.state.accion == 2) {
             options.method = "PUT";
-            fetch("api/movements/"+ this.state.idEditar, options).then(
+            fetch("api/movements/" + this.state.idEditar, options).then(
                 (response) => {
                     return response.status;
                 }
@@ -184,7 +189,6 @@ export class Movimientos extends Component {
                         this.mitoogle();
                         this.componentDidMount();
                     } else {
-                        console.log(code);
                     }
                 }
             )
@@ -192,7 +196,7 @@ export class Movimientos extends Component {
 
 
 
-        
+
 
     }
 
@@ -214,7 +218,6 @@ export class Movimientos extends Component {
                     this.setState({ accion: 0 });
                     this.componentDidMount();
                 } else {
-                    console.log(code);
                 }
             }
         )
@@ -230,7 +233,7 @@ export class Movimientos extends Component {
                         <p>Esta tabla contiene todas las operaciones realizadas de los almacenes</p>
                     </div>
                     <div class="col text-end align-items-center">
-                        <button class="btn btn-orange" onClick={() => this.mostrarModalAgregar()}>Registrar movimiento</button>
+                        {this.state.isUserValid && <button class="btn btn-orange" onClick={() => this.mostrarModalAgregar()}>Registrar movimiento</button>}
                     </div>
                 </div>
                 <div className='container-fluid'>
@@ -257,10 +260,12 @@ export class Movimientos extends Component {
                                         <td>{movimiento.type}</td>
                                         <td>{movimiento.companyId}</td>
                                         <td>{movimiento.employeeId}</td>
-                                        <td>
-                                            <button className="btn mx-3" onClick={() => this.mostrarModalUpdate(movimiento.movementId)}>Editar</button>
-                                            <button className="btn btn-danger" onClick={() => this.mostrarModalDelete(movimiento.movementId)}>X</button>
-                                        </td>
+                                        { this.state.isUserValid &&
+                                            <td>
+                                                <button className="btn mx-3" onClick={() => this.mostrarModalUpdate(movimiento.movementId)}>Editar</button>
+                                                <button className="btn btn-danger" onClick={() => this.mostrarModalDelete(movimiento.movementId)}>X</button>
+                                            </td>
+                                        }
                                     </tr>
 
                                 )
