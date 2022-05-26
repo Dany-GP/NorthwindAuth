@@ -27,7 +27,6 @@ export class NavMenu extends Component {
           const valo = authService.isValidUser(u);
           console.log(valo);
           this.setState({isUserValid: valo});
-          console.log(valo);
       }
 
   );
