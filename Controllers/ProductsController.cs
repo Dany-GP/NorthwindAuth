@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace aspnetcore_with_reactspa.Controllers
 {
-    [Authorize]
+    //[Authorize(Policy = "RequireAdminRole")]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
@@ -28,6 +28,7 @@ namespace aspnetcore_with_reactspa.Controllers
             _userManager = userManager;
         }
 
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpGet]
         [Route("sales")]
         public IEnumerable<Object> GetSalesFromProduct(String name, DateTime startDate, DateTime endDate)
@@ -70,7 +71,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // GET: api/Products
-        [AllowAnonymous]
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
@@ -83,7 +84,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // GET: api/Products/5
-        [AllowAnonymous]
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
@@ -106,7 +107,7 @@ namespace aspnetcore_with_reactspa.Controllers
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [AllowAnonymous]
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
@@ -138,7 +139,7 @@ namespace aspnetcore_with_reactspa.Controllers
 
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [AllowAnonymous]
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
@@ -157,7 +158,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
         // DELETE: api/Products/5
-        [AllowAnonymous]
+        //[Authorize(Policy = "RequireAdminRole")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

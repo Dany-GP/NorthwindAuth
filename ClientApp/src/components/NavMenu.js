@@ -7,6 +7,7 @@ import logo from './img/Logotipo-500x500-px.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 //import './styles/index.css';
+import authService from './api-authorization/AuthorizeService'
 
 export class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -16,8 +17,20 @@ export class NavMenu extends Component {
 
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
-      collapsed: true
+      collapsed: true, isUserValid: false
     };
+  }
+
+  componentDidMount(){
+    authService.getUser().then(
+      (u) => { console.log(u);
+          const valo = authService.isValidUser(u);
+          console.log(valo);
+          this.setState({isUserValid: valo});
+          console.log(valo);
+      }
+
+  );
   }
 
   toggleNavbar() {
@@ -44,10 +57,10 @@ export class NavMenu extends Component {
                   <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-white mx-2" to="/Almacenes">Almacenes</NavLink>
+                  {this.state.isUserValid && <NavLink tag={Link} className="text-white mx-2" to="/Almacenes">Almacenes</NavLink>}
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-white mx-2" to="/Movimientos">Movimientos</NavLink>
+                  {this.state.isUserValid && <NavLink tag={Link} className="text-white mx-2" to="/Movimientos">Movimientos</NavLink>}
                 </NavItem>
                 <LoginMenu className="text-white mx-2">
                 </LoginMenu>

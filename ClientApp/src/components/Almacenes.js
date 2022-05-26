@@ -15,12 +15,21 @@ export class Almacenes extends Component {
         this.state = {
             accion: 0, data: [], categorias: [], suppliers: [], companies: [], productId: 0,
             name: "", proveedor: 0, categoria: 0, quantity: "", precio: 0,
-            company: 0, idEditar: 0
+            company: 0, idEditar: 0, isUserValid: false
         };
     }
 
     componentDidMount() {
+        
+        authService.getUser().then(
+            (u) => { console.log(u);
+                const valo = authService.isAdmin(u);
+                console.log(valo);
+                this.setState({isUserValid: valo});
+                console.log(valo);
+            }
 
+        );
 
         const options = {
             method: "GET",
@@ -220,11 +229,10 @@ export class Almacenes extends Component {
 
             <div className='container'>
                 <h1>Catálogo de Productos</h1>
-                <button type='button' className='btn btn-orange my-3' onClick={() => this.mostrarModalAgregar()}>Agregar</button>
-                <div class="tab sticky-top">
-                    <button class="tablinks" onclick="openAlmacen(event, 'Almacen1')" id="defaultOpen">Stock Total</button>
-                    <button class="tablinks" onclick="openAlmacen2(event, 'Almacen2')" id="dosOpen">Almacen #</button>
-                </div>
+                {
+                    this.state.isUserValid && <button type='button' className='btn btn-orange my-3' onClick={() => this.mostrarModalAgregar()}>Agregar</button>
+                }
+                
 
 
                 <table id="tabla_1" className="table table-dark table-striped w-100">
@@ -248,8 +256,8 @@ export class Almacenes extends Component {
                                     <td>{producto.unitPrice}</td>
                                     <td>{producto.quantityPerUnit}</td>
                                     <td>
-                                        <button className="btn mx-3" onClick={() => this.cargarModalEditar(producto.productId)}>Editar</button>
-                                        <button className="btn btn-danger" onClick={() => this.mostrarModalDelete(producto.productId)}>X</button>
+                                        {this.state.isUserValid && <button className="btn mx-3" onClick={() => this.cargarModalEditar(producto.productId)}>Editar</button>}
+                                        {this.state.isUserValid && <button className="btn btn-danger" onClick={() => this.mostrarModalDelete(producto.productId)}>X</button>}
                                     </td>
                                 </tr>
 

@@ -270,7 +270,7 @@ export class Movimientos extends Component {
                 </div>
 
                 <Modal
-                    isOpen={this.state.accion >= 1 && this.state.accion <= 3}
+                    isOpen={this.state.accion >= 1 && this.state.accion < 3}
                     centered
                     size="lg"
                     toggle={this.mitoogle}
