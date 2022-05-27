@@ -27,10 +27,10 @@ namespace aspnetcore_with_reactspa.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movement>>> GetMovements()
         {
-          if (_context.Movements == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movements == null)
+            {
+                return NotFound();
+            }
             return await _context.Movements.OrderByDescending(m => m.MovementId).Take(100).ToListAsync();
         }
 
@@ -38,10 +38,10 @@ namespace aspnetcore_with_reactspa.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Movement>> GetMovement(int id)
         {
-          if (_context.Movements == null)
-          {
-              return NotFound();
-          }
+            if (_context.Movements == null)
+            {
+                return NotFound();
+            }
             var movement = await _context.Movements.FindAsync(id);
 
             if (movement == null)
@@ -86,8 +86,8 @@ namespace aspnetcore_with_reactspa.Controllers
 
         // POST: api/Movements
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-          
-       [HttpPost]
+
+        [HttpPost]
         public async Task<ActionResult<Movement>> PostMovement(Movement movement, int pId, int cantidad)
         {
             Console.WriteLine(pId);
@@ -101,26 +101,34 @@ namespace aspnetcore_with_reactspa.Controllers
             Console.WriteLine(movement.Type);
             if (movement.Type.Equals("VENTA"))
             {
-                
-                    Warehouseproduct wh = await _context.Warehouseproducts
-                        .FindAsync(movement.OriginWarehouseId, pId);
-                    Console.WriteLine(wh.UnitsInStock);
-                    wh.UnitsInStock = (short)(wh.UnitsInStock - cantidad);
-                    _context.Entry(wh).State = EntityState.Modified;
-                    //await _context.SaveChangesAsync();
-                
-                
+
+                Warehouseproduct wh = await _context.Warehouseproducts
+                    .FindAsync(movement.OriginWarehouseId, pId);
+                if (wh == null)
+                {
+                    return NotFound();
+                }
+                Console.WriteLine(wh.UnitsInStock);
+                wh.UnitsInStock = (short)(wh.UnitsInStock - cantidad);
+                _context.Entry(wh).State = EntityState.Modified;
+                //await _context.SaveChangesAsync();
+
+
             }
             else if (movement.Type.Equals("COMPRA"))
             {
                 Warehouseproduct wh = await _context.Warehouseproducts
                         .FindAsync(movement.OriginWarehouseId, pId);
+                if (wh == null)
+                {
+                    return NotFound();
+                }
                 Console.WriteLine(wh.UnitsInStock);
                 wh.UnitsInStock = (short)(wh.UnitsInStock + cantidad);
                 _context.Entry(wh).State = EntityState.Modified;
                 //await _context.SaveChangesAsync();
             }
-            
+
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
 
@@ -129,7 +137,7 @@ namespace aspnetcore_with_reactspa.Controllers
         }
 
 
-       // [Authorize(Policy = "grt")]// DELETE: api/Movements/5
+        // [Authorize(Policy = "grt")]// DELETE: api/Movements/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovement(int id)
         {
