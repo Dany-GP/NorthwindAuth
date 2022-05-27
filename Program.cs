@@ -62,6 +62,8 @@ builder.Services.AddAuthorization(options =>
           policy.RequireClaim(ClaimTypes.Role, new String[] {"ADMINISTRADOR" });
           //policy.RequireRole("Administrator");
      });
+     options.AddPolicy("grt",
+         policy => policy.RequireRole("GERENTE"));
 });
 
 builder.Services.AddControllersWithViews();
