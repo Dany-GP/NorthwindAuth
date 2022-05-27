@@ -11,8 +11,8 @@ export class Movimientos extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            accion: 0, data: [], suppliers: [], companies: [], employees: [], warehouses: [], idEliminar: 0,
-            proveedor: 0, inAlmacen: 0, outAlmacen: 0, movimiento: '', notas: '', compania: 0, empleado: 0, fecha: '',
+            accion: 0, data: [], suppliers: [], companies: [], employees: [], warehouses: [], products:[], idEliminar: 0,
+            proveedor: 0, inAlmacen: 0, outAlmacen: 0, movimiento: '', notas: '', cantidad: 0, compania: 0, empleado: 0, producto:0, fecha: '',
             idEditar: 0, isUserValid: false
         };
 
@@ -61,6 +61,15 @@ export class Movimientos extends Component {
             }
         );
 
+        fetch('api/products', options).then(response => {
+            return response.json();
+        }).then(
+            (dataApi) => {
+                this.setState({ products: dataApi });
+
+            }
+        );
+
         fetch('api/suppliers', options).then(response => {
             return response.json();
         }).then(
@@ -91,6 +100,8 @@ export class Movimientos extends Component {
             notas: "",
             compania: 0,
             empleado: 0,
+            producto: 0,
+            cantidad: 0, 
             accion: 0
         })
 
@@ -162,9 +173,10 @@ export class Movimientos extends Component {
             },
             body: JSON.stringify(movimiento)
         };
+        
         if (this.state.accion == 1) {
 
-            fetch("api/movements", options).then(
+            fetch("api/movements/", options).then(
                 (response) => {
                     return response.status;
                 }
@@ -366,6 +378,22 @@ export class Movimientos extends Component {
                                         )
                                     }
                                 </Input>
+                            </FormGroup>
+                            <FormGroup>
+                                <label>Producto</label>
+                                <Input name='producto' onChange={evt => this.nameChange(evt)} value={this.state.producto} type='select'>
+                                    <option selected value="default">Selecciona un producto</option>
+                                    {
+                                        this.state.products.map(producto =>
+                                            <option value={producto.productID}>{producto.productName}</option>
+
+                                        )
+                                    }
+                                </Input>
+                            </FormGroup>
+                            <FormGroup>
+                                <label>Cantidad</label>
+                                <Input name='cantidad' onChange={evt => this.nameChange(evt)} value={this.state.cantidad} type='number'></Input>
                             </FormGroup>
                         </Form>
                     </ModalBody>
