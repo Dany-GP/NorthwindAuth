@@ -13,7 +13,7 @@ export class Movimientos extends Component {
         this.state = {
             accion: 0, data: [], suppliers: [], companies: [], employees: [], warehouses: [], products:[], idEliminar: 0,
             proveedor: 0, inAlmacen: 0, outAlmacen: 0, movimiento: '', notas: '', cantidad: 0, compania: 0, empleado: 0, producto:0, fecha: '',
-            idEditar: 0, isUserValid: false
+            idEditar: 0, isUserValid: false, productId:0
         };
 
     }
@@ -108,6 +108,7 @@ export class Movimientos extends Component {
     }
 
     nameChange(evt) {
+        //console.log(evt.target.value);
         this.setState({ [evt.target.name]: evt.target.value });
 
     }
@@ -154,7 +155,7 @@ export class Movimientos extends Component {
         var fecha = new Date().getFullYear() + "-" + (new Date().getMonth() + 1).toString().padStart(2, "0") + "-" +
             new Date().getDate() + "T" + new Date().getHours().toString().padStart(2, "0") + ":" + new Date().getMinutes().toString().padStart(2, "0") +
             ":" + new Date().getSeconds().toString().padStart(2, "0");
-
+        console.log(this.state.productId);
         var movimiento = {
             movementId: this.state.idEditar,
             date: fecha,
@@ -165,7 +166,10 @@ export class Movimientos extends Component {
             notes: this.state.notas,
             companyId: this.state.compania,
             employeeId: this.state.empleado
+            //productId : this.state.productId,
+            //cantidad : this.state.cantidad
         }
+        console.log(movimiento);
         var options = {
             method: "POST",
             headers: {
@@ -176,7 +180,7 @@ export class Movimientos extends Component {
         
         if (this.state.accion == 1) {
 
-            fetch("api/movements/", options).then(
+            fetch("api/movements?pId="+this.state.productId + "&cantidad="+this.state.cantidad, options).then(
                 (response) => {
                     return response.status;
                 }
@@ -332,7 +336,7 @@ export class Movimientos extends Component {
                             <FormGroup>
                                 <label>Almacen destino</label>
                                 <Input name='outAlmacen' onChange={evt => this.nameChange(evt)} value={this.state.outAlmacen} type='select'>
-                                    <option selected value="default">Selecciona un almacen</option>
+                                    <option selected value="null">Selecciona un almacen</option>
                                     {
                                         this.state.warehouses.map(almacen =>
                                             <option value={almacen.warehouseId}>{almacen.description}</option>
@@ -346,7 +350,7 @@ export class Movimientos extends Component {
                                 <Input name='movimiento' onChange={evt => this.nameChange(evt)} value={this.state.movimiento} type='select'>
                                     <option selected value="default">Selecciona un movimiento</option>
                                     <option value="VENTA">VENTA</option>
-                                    <option value="COMRPA">COMPRA</option>
+                                    <option value="COMPRA">COMPRA</option>
                                     <option value="TRASPASO">TRASPASO</option>
                                     <option value="AJUSTE">AJUSTE</option>
                                 </Input>
@@ -381,11 +385,11 @@ export class Movimientos extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <label>Producto</label>
-                                <Input name='producto' onChange={evt => this.nameChange(evt)} value={this.state.producto} type='select'>
+                                <Input name='productId' onChange={evt => this.nameChange(evt)} value={this.state.productId} type='select'>
                                     <option selected value="default">Selecciona un producto</option>
                                     {
                                         this.state.products.map(producto =>
-                                            <option value={producto.productID}>{producto.productName}</option>
+                                            <option value={producto.productId}>{producto.productName}</option>
 
                                         )
                                     }

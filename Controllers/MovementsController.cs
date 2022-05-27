@@ -90,6 +90,9 @@ namespace aspnetcore_with_reactspa.Controllers
        [HttpPost]
         public async Task<ActionResult<Movement>> PostMovement(Movement movement, int pId, int cantidad)
         {
+            Console.WriteLine(pId);
+            Console.WriteLine(cantidad);
+
             if (_context.Movements == null)
             {
                 return Problem("Entity set 'NorthwindContext.Movements'  is null.");
@@ -104,7 +107,7 @@ namespace aspnetcore_with_reactspa.Controllers
                     Console.WriteLine(wh.UnitsInStock);
                     wh.UnitsInStock = (short)(wh.UnitsInStock - cantidad);
                     _context.Entry(wh).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
+                    //await _context.SaveChangesAsync();
                 
                 
             }
@@ -115,13 +118,14 @@ namespace aspnetcore_with_reactspa.Controllers
                 Console.WriteLine(wh.UnitsInStock);
                 wh.UnitsInStock = (short)(wh.UnitsInStock + cantidad);
                 _context.Entry(wh).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+                //await _context.SaveChangesAsync();
             }
             
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetMovement", new { id = movement.MovementId }, movement);
+            return NotFound();
         }
 
 
